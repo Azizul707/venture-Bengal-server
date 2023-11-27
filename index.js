@@ -32,6 +32,7 @@ const client = new MongoClient(uri, {
 } );
 
 const packagesCollection = client.db( 'bengalDB' ).collection( 'packages' );
+const guidesCollection = client.db( 'bengalDB' ).collection( 'guides' );
 
 async function run() {
   try {
@@ -51,7 +52,10 @@ async function run() {
     })
 
 
-
+    app.get( '/guides', async ( req, res ) => {
+      const result = await guidesCollection.find().toArray();
+      res.send( result );
+    })
 
 
 
