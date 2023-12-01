@@ -17,10 +17,23 @@ app.listen(port, () => {
 app.use( express.json() );
 app.use( cookieParser() );
 
-app.use( cors( {
-  origin:'*',
-  credentials: true
-} ) );
+// app.use( cors( {
+//   origin: [
+//     'https://bengal-venture.web.app/',
+//     'https://bengal-venture.firebaseapp.com/',
+//     'http://localhost:5173'
+  
+//   ],
+//   credentials: true
+// } ) );
+
+const corsOptions ={
+  origin:'*', 
+  credentials:true,
+  optionSuccessStatus:200,
+}
+app.use( cors( corsOptions ) );
+module.exports = app;
 
 const logger = ( req, res, next ) => {
   
@@ -61,7 +74,7 @@ const bookingsCollection = client.db("bengalDB").collection("bookings");
 
 async function run() {
   try {
-    // await client.connect();
+    await client.connect();
 
     app.post( '/jwt', async ( req, res ) => {
       const user = req.body;
@@ -186,9 +199,9 @@ async function run() {
 
     app.get("/bookings", async (req, res) => {
       const email = req.query.email;
-      if ( req.user.email !== req.query.email ) {
-        return res.status(403).send({message:"Forbidden access"})
-      }
+      // if ( req.user.email !== req.query.email ) {
+      //   return res.status(403).send({message:"Forbidden access"})
+      // }
       const query = { email: email };
       const result = await bookingsCollection.find(query).toArray();
       res.send(result);
@@ -211,10 +224,10 @@ async function run() {
       res.send(result);
     });
 
-    // await client.db("admin").command({ ping: 1 });
-    // console.log(
-    //   "Pinged your deployment. You successfully connected to MongoDB!"
-    // );
+    await client.db("admin").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
   }
 }
