@@ -16,10 +16,9 @@ app.listen(port, () => {
 
 app.use( express.json() );
 app.use( cookieParser() );
+
 app.use( cors( {
-  origin: [
-    'http://localhost:5173'
-  ],
+  origin:'*',
   credentials: true
 } ) );
 
@@ -62,7 +61,7 @@ const bookingsCollection = client.db("bengalDB").collection("bookings");
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     app.post( '/jwt', async ( req, res ) => {
       const user = req.body;
@@ -122,7 +121,7 @@ async function run() {
     });
     // get user api
 
-    app.get("/users",verify, async (req, res) => {
+    app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -185,7 +184,7 @@ async function run() {
 
     // get bookings api
 
-    app.get("/bookings",verify, async (req, res) => {
+    app.get("/bookings", async (req, res) => {
       const email = req.query.email;
       if ( req.user.email !== req.query.email ) {
         return res.status(403).send({message:"Forbidden access"})
@@ -205,17 +204,17 @@ async function run() {
 
     // delete bookings api
 
-    app.delete("/bookings/:id",verify, async (req, res) => {
+    app.delete("/bookings/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await bookingsCollection.deleteOne(query);
       res.send(result);
     });
 
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
   }
 }
